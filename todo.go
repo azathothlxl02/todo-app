@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"io"
 )
 
 type Task struct {
@@ -25,11 +26,16 @@ func loadTasks() ([]Task, error) {
 	defer file.Close()
 
 	var tasks []Task
-	if err := json.NewDecoder(file).Decode(&tasks); err != nil {
+	err = json.NewDecoder(file).Decode(&tasks)
+	if err != nil {
+		if err == io.EOF {
+			return []Task{}, nil
+		}
 		return nil, err
 	}
 	return tasks, nil
 }
+
 
 func saveTasks(tasks []Task) error {
 	file, err := os.Create(dataFile)
@@ -51,35 +57,45 @@ func nextID(tasks []Task) int {
 }
 
 func AddTask(title string) {
-	tasks := loadTasks()
+	tasks, err := loadTasks()
+	if err != nil {
+		fmt.Println("Error loading tasks:", err)
+		return
+	}
 
 	var maxID int
-	for _, task = range tasks{
-		if task.ID > maxID{
+	for _, task := range tasks {
+		if task.ID > maxID {
 			maxID = task.ID
 		}
 	}
-	
+
 	newTask := Task{
-		ID: maxID + 1,
-		Title: title
-		Done: false,
+		ID:    maxID + 1,
+		Title: title,
+		Done:  false,
 	}
 
-	tasks = append(tasks,newTask)
-	saveTasks(task)
+	tasks = append(tasks, newTask)
+	if err := saveTasks(tasks); err != nil {
+		fmt.Println("Error saving tasks:", err)
+	}
 }
 
 func ListTasks() {
-    tasks := loadTasks()
+	tasks, err := loadTasks()
+	if err != nil {
+		fmt.Println("Error loading tasks:", err)
+		return
+	}
 
-    for _, task := range tasks {
-        status := "[ ]"
-        if task.Completed {
-            status = "[x]"
-        }
-        fmt.Printf("%d: %s %s\n", task.ID, task.Title, status)
-    }
+	for _, task := range tasks {
+		status := "[ ]"
+		if task.Done {
+			status = "[x]"
+		}
+		fmt.Printf("%d: %s %s\n", task.ID, task.Title, status)
+	}
 }
 
 
