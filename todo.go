@@ -50,7 +50,23 @@ func nextID(tasks []Task) int {
 }
 
 func AddTask(title string) {
-	panic("unimplemented")
+	tasks := loadTasks()
+
+	var maxID int
+	for -, task = range tasks{
+		if task.ID > maxID{
+			maxID = task.ID
+		}
+	}
+	
+	newTask := Task{
+		ID: maxID + 1,
+		Title: title
+		Done: false,
+	}
+
+	tasks = append(tasks,newTask)
+	saveTasks(task)
 }
 
 func ListTasks() {
