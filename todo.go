@@ -70,8 +70,17 @@ func AddTask(title string) {
 }
 
 func ListTasks() {
-	panic("unimplemented")
+    tasks := loadTasks()
+
+    for _, task := range tasks {
+        status := "[ ]"
+        if task.Completed {
+            status = "[x]"
+        }
+        fmt.Printf("%d: %s %s\n", task.ID, task.Title, status)
+    }
 }
+
 
 func CompleteTask(id int) {
 	panic("unimplemented")
