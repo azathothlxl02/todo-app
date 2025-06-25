@@ -53,7 +53,7 @@ func AddTask(title string) {
 	tasks := loadTasks()
 
 	var maxID int
-	for -, task = range tasks{
+	for _, task = range tasks{
 		if task.ID > maxID{
 			maxID = task.ID
 		}
